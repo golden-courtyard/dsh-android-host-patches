@@ -1,0 +1,78 @@
+=== 1. 解包 ===
+internal-loader
+loader
+native
+require-builtin
+  目录: /data/data/com.termux/files/home/narb-src/packages/native
+=== 2. 装 node-addon-api ===
+npm warn install-scripts 1 package has install scripts not yet covered by allowScripts:
+npm warn install-scripts   esbuild@0.28.2 (postinstall: node install.js)
+npm warn install-scripts
+npm warn install-scripts Run `npm install-scripts ls` to review, or `npm install-scripts approve <pkg>` to allow.
+=== 3. 编译 ===
+gyp info spawn args '--generator-output',
+gyp info spawn args 'build',
+gyp info spawn args '-Goutput_dir=.'
+gyp info spawn args ]
+gyp info spawn make
+gyp info spawn args [ 'BUILDTYPE=Release', '-C', 'build' ]
+make: Entering directory '/data/data/com.termux/files/home/narb-src/packages/native/build'
+  CC(target) Release/obj.target/nothing/../../node_modules/node-addon-api/nothing.o
+rm -f Release/obj.target/../../node_modules/node-addon-api/nothing.a Release/obj.target/../../node_modules/node-addon-api/nothing.a.ar-file-list; mkdir -p `dirname Release/obj.target/../../node_modules/node-addon-api/nothing.a`
+ar crs Release/obj.target/../../node_modules/node-addon-api/nothing.a @Release/obj.target/../../node_modules/node-addon-api/nothing.a.ar-file-list
+  COPY Release/nothing.a
+  CXX(target) Release/obj.target/require_builtin/src/node_api_addon.o
+  CXX(target) Release/obj.target/require_builtin/src/debug_trace.o
+  CXX(target) Release/obj.target/require_builtin/src/native_types.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_symbol.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_context/helper.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_context/platform.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_context/darwin_arm64.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_context/darwin_x64.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_context/linux_arm64.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_context/linux_x64.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_context/win32_arm64.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_context/win32_x64.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_context/win32_ia32.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_probe/helper.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_probe/platform.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_probe/getter_decoder.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_probe/posix.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_probe/win32_common.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_probe/darwin_arm64.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_probe/darwin_x64.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_probe/linux_arm64.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_probe/linux_x64.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_probe/win32_arm64.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_probe/win32_x64.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_probe/win32_ia32.o
+  CXX(target) Release/obj.target/require_builtin/src/require_builtin_probe.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_context/embedder_data.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_context/runtime_profile.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_context/runtime_profile_napi.o
+  CXX(target) Release/obj.target/require_builtin/src/runtime_compat_napi.o
+  SOLINK_MODULE(target) Release/obj.target/require_builtin.node
+  COPY Release/require_builtin.node
+make: Leaving directory '/data/data/com.termux/files/home/narb-src/packages/native/build'
+gyp info ok 
+=== 4. 产物 ===
+/data/data/com.termux/files/home/narb-src/packages/native/build/Release/obj.target/require_builtin.node
+/data/data/com.termux/files/home/narb-src/packages/native/build/Release/require_builtin.node
+/data/data/com.termux/files/home/narb-src/node_modules/@electron-internal/extract-zip/index.darwin-universal.node
+/data/data/com.termux/files/home/narb-src/node_modules/@electron-internal/extract-zip/index.linux-arm-gnueabihf.node
+/data/data/com.termux/files/home/narb-src/node_modules/@electron-internal/extract-zip/index.linux-arm64-gnu.node
+/data/data/com.termux/files/home/narb-src/node_modules/@electron-internal/extract-zip/index.linux-arm64-musl.node
+/data/data/com.termux/files/home/narb-src/node_modules/@electron-internal/extract-zip/index.linux-ia32-gnu.node
+/data/data/com.termux/files/home/narb-src/node_modules/@electron-internal/extract-zip/index.linux-x64-gnu.node
+/data/data/com.termux/files/home/narb-src/node_modules/@electron-internal/extract-zip/index.linux-x64-musl.node
+/data/data/com.termux/files/home/narb-src/node_modules/@electron-internal/extract-zip/index.win32-arm64-msvc.node
+/data/data/com.termux/files/home/narb-src/node_modules/@electron-internal/extract-zip/index.win32-x64-msvc.node
+total 118
+drwx------. 5 u0_a416 u0_a416  3452 Oct 28 22:04 .
+drwx------. 4 u0_a416 u0_a416  3452 Oct 28 22:04 ..
+drwx------. 3 u0_a416 u0_a416  3452 Oct 28 22:04 .deps
+drwx------. 3 u0_a416 u0_a416  3452 Oct 28 22:04 node_modules
+-rw-------. 1 u0_a416 u0_a416   744 Oct 28 22:04 nothing.a
+drwx------. 4 u0_a416 u0_a416  3452 Oct 28 22:04 obj.target
+-rwx------. 1 u0_a416 u0_a416 95848 Oct 28 22:04 require_builtin.node
+=== 完成 ===

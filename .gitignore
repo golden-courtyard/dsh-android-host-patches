@@ -1,0 +1,30 @@
+# 模型权重
+*.gguf
+
+# 外部状态与缓存（含凭据、会话日志）
+.dsh/
+.udocker/
+.termux/
+.cache/
+.npm/
+.local/
+.ssh/
+sync/
+
+# syncthing 元数据
+dev.json
+folder.json
+
+# 构建树（android-arm64 产物 require_builtin.node 已单独 force-add）
+narb-src/
+narb-src.tar.gz
+
+# 工作台：将来放工程内容，不归这个仓管
+hub/
+
+# 跑起来的临时输出
+syncthing.log
+dsh-run.log
+from_pc.txt
+good
+esmtest.mjs

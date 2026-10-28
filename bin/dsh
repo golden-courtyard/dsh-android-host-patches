@@ -1,0 +1,3 @@
+#!/data/data/com.termux/files/usr/bin/bash
+export NODE_OPTIONS="--require=/data/data/com.termux/files/home/.dsh/android-fs-shim.cjs"
+exec "$PREFIX/bin/dsh" "$@"
