@@ -46,11 +46,19 @@ const SAVE_ARGS = {
   png: () => ['pngsave'],
 };
 
+const CALL_LOG = path.join(TMP, 'dsh-sharp-calls.log');
+function note(msg) {
+  try {
+    fs.appendFileSync(CALL_LOG, `${new Date().toISOString()} pid=${process.pid} ppid=${process.ppid} ${msg}\n`);
+  } catch {}
+}
+
 function tmpPath(tag) {
   return path.join(TMP, `dsh-sharp-${process.pid}-${crypto.randomBytes(6).toString('hex')}${tag}`);
 }
 
 function run(bin, args) {
+  note(`${bin} ${args[0] ?? ''}`);
   return new Promise((resolve, reject) => {
     const child = spawn(bin, args, { stdio: ['ignore', 'pipe', 'pipe'] });
     let out = '';

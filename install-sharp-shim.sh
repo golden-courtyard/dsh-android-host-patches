@@ -34,12 +34,14 @@ echo "=== 3. 清掉会静默接管的 wasm 包 ==="
 rm -rf "$D/@img/sharp-wasm32" "$D/@emnapi/runtime" 2>/dev/null
 echo "  @img 剩余: $(ls "$D/@img" 2>/dev/null | tr '\n' ' ')"
 
-echo "=== 4. 检查 NODE_OPTIONS 指向 boot 钩子 ==="
-if grep -q "shims/sharp-boot.cjs" "$HOME/.bashrc"; then
-    echo "  .bashrc 已指向 shims/sharp-boot.cjs"
+echo "=== 4. 不需要 NODE_OPTIONS 钩子 ==="
+# 实测：解码发生在 dsh 主进程，直接解析到 node_modules/sharp。
+# Module._load 钩子在这条路径上没有作用（细节见同步目录的交接记录）。
+if grep -q "sharp-boot\|sharp-shim" "$HOME/.bashrc"; then
+    echo "  ⚠ .bashrc 仍引用 sharp 钩子，可以去掉，只留 android-fs-shim"
+    grep -n NODE_OPTIONS "$HOME/.bashrc"
 else
-    echo "  ⚠ .bashrc 未指向新钩子，请手动改 NODE_OPTIONS 里的 --require"
-    grep NODE_OPTIONS "$HOME/.bashrc"
+    echo "  .bashrc 干净：NODE_OPTIONS 只保留 android-fs-shim"
 fi
 
 echo "=== 5. 端到端自测 ==="
