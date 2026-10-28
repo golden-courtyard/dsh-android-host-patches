@@ -28,3 +28,6 @@ dsh-run.log
 from_pc.txt
 good
 esmtest.mjs
+
+# 本机全局 git 配置，不入库
+.gitconfig
