@@ -31,3 +31,5 @@ esmtest.mjs
 
 # 本机全局 git 配置，不入库
 .gitconfig
+.config/
+*.log
