@@ -4,18 +4,20 @@
  * 实测：Android 的应用数据目录不支持硬链接（ln 和 fs.link 都返回
  * Permission denied / EACCES）。
  *
- * DSH 有几处用 link() 做"创建但不覆盖"的原子发布：
- *   - @deepseek-ai/dsh-session-persistence-jsonl  写会话日志（promise 版）
- *   - @deepseek-ai/dsh-app-boot
- *   - @deepseek-ai/dsh-subprocess-local
+ * DSH 有几处用 link() 做原子发布：
+ *   @deepseek-ai/dsh-session-persistence-jsonl  写会话日志
+ *   @deepseek-ai/dsh-attachment-local           发布附件对象
  *
- * 这里覆盖三种调用形态：fs.linkSync / fs.link（回调）/ fs.promises.link。
- * 先试硬链接，失败则 rename。
+ * 兜底为什么是 copyFile 而不是 rename：
+ *   调用方是「link(src, dst) → unlink(src)」这套惯用法，期望 link 之后
+ *   两个名字都在。rename 会把 src 移走，紧接着的 unlink(src) 就 ENOENT，
+ *   整次写入被包成 ATTACHMENT_WRITE_FAILED（实测踩过）。
+ *   copyFile + COPYFILE_EXCL 才是等价语义：dst 出现、src 保留、
+ *   dst 已存在时照样 EEXIST。
+ *
+ * 代价：多一次字节拷贝（不是同 inode 的别名）。手机单用户场景可接受。
  *
  * 必须先抓原始引用再替换，否则补丁函数内部再次调用同名方法会自我递归。
- *
- * 语义差异：rename 覆盖已存在的目标，link 会 EEXIST。调用点通常已先确认
- * 目标不存在（如 rejectExistingLog），单实例场景下可接受。
  */
 'use strict'
 
@@ -31,17 +33,18 @@ function shouldFallback(error) {
 /* 先抓原始引用。顺序不能反。 */
 const originalLinkSync = fs.linkSync
 const originalLink = fs.link
-const originalRenameSync = fs.renameSync
-const originalRename = fs.rename
+const originalCopyFileSync = fs.copyFileSync
+const originalCopyFile = fs.copyFile
 const originalFspLink = fsp.link
-const originalFspRename = fsp.rename
+const originalFspCopyFile = fsp.copyFile
+const COPYFILE_EXCL = fs.constants.COPYFILE_EXCL
 
 const patchedLinkSync = function patchedLinkSync(existingPath, newPath) {
   try {
     return originalLinkSync.call(fs, existingPath, newPath)
   } catch (error) {
     if (!shouldFallback(error)) throw error
-    return originalRenameSync.call(fs, existingPath, newPath)
+    return originalCopyFileSync.call(fs, existingPath, newPath, COPYFILE_EXCL)
   }
 }
 
@@ -54,7 +57,7 @@ const patchedLink = function patchedLink(existingPath, newPath, callback) {
       callback(error)
       return
     }
-    originalRename.call(fs, existingPath, newPath, callback)
+    originalCopyFile.call(fs, existingPath, newPath, COPYFILE_EXCL, callback)
   })
 }
 
@@ -63,7 +66,7 @@ const patchedFspLink = async function patchedFspLink(existingPath, newPath) {
     return await originalFspLink.call(fsp, existingPath, newPath)
   } catch (error) {
     if (!shouldFallback(error)) throw error
-    return await originalFspRename.call(fsp, existingPath, newPath)
+    return await originalFspCopyFile.call(fsp, existingPath, newPath, COPYFILE_EXCL)
   }
 }
 
