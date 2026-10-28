@@ -46,6 +46,13 @@ else
     echo "  失败：没有 install-sharp-shim.sh"
 fi
 
+echo "=== 4.6 重放附件持久化补丁（/data/data 不可读）==="
+if [ -f "$HOME/patch-attachment-durable.sh" ]; then
+    bash "$HOME/patch-attachment-durable.sh" 2>&1 | tail -12
+else
+    echo "  失败：没有 patch-attachment-durable.sh"
+fi
+
 echo "=== 5. 检查 NODE_OPTIONS ==="
 grep NODE_OPTIONS "$HOME/.bashrc" || echo "  失败：.bashrc 里没有 NODE_OPTIONS"
 
