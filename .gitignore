@@ -35,3 +35,6 @@ ur.txt
 .gitconfig
 .config/
 *.log
+cj*.txt
+up*.json
+*.bak-*
