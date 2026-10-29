@@ -2,7 +2,8 @@
 *.gguf
 
 # 外部状态与缓存（含凭据、会话日志）
-.dsh/
+.dsh/*
+!.dsh/skills/
 .udocker/
 .termux/
 .cache/
