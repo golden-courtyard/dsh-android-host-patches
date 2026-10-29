@@ -39,3 +39,6 @@ ur.txt
 cj*.txt
 up*.json
 *.bak-*
+
+# 源码参考（sparse clone，44MB）
+src/
