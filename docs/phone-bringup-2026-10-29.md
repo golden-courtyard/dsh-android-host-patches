@@ -165,6 +165,9 @@ cd ~ && dsh --profile main --no-open >> ~/dsh-run.log 2>&1 &
 **未定**：进程 `/proc/13858/environ` 里确实有那条 `--require=...sharp-shim.cjs`，
 但解码路径没有经过它。具体机制没有定论，也不再追。
 
+机制问题已开 issue 跟踪：**agent-hub #3** —
+https://github.com/liumiaoqi/agent-hub/issues/3
+
 **处置**：既然"替换 `node_modules/sharp`"是被实证有效的机制，就不再依赖钩子：
 
 - `.bashrc` 的 `NODE_OPTIONS` 撤回为只含 `android-fs-shim`
@@ -225,6 +228,8 @@ cd ~ && dsh --profile main --no-open >> ~/dsh-run.log 2>&1 &
    不适合大模型或大图搜索
 5. `upgrade.sh` 目前只重放 flock 与原生模块两关，sharp 这关需要追加一步
    （`install-sharp-shim.sh`）
+6. NODE_OPTIONS 钩子为何未作用于解码路径 —— 机制未定，见 agent-hub #3，
+   待从源码查 `packages/*/lazy-require` 与 `packages/attachment*`
 
 ## 7. 给 PC 侧 dsh 的两条建议
 
