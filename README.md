@@ -4,6 +4,7 @@
   <sub><sup>在无 root 的 Android 上运行 DeepSeek Harness 所需的宿主侧补丁</sup></sub>
 
   <p>
+    <a href="https://github.com/deepseek-ai/deepseek-harness"><img src="https://img.shields.io/badge/dsh-0.2.2--alpha.2-4D6BFE" alt="dsh version"></a>
     <img src="https://img.shields.io/badge/License-GPL--3.0-blue" alt="License">
     <img src="https://img.shields.io/badge/Node-24-green" alt="Node">
     <img src="https://img.shields.io/badge/Platform-Android%20arm64-lightgrey" alt="Platform">
