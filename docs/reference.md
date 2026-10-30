@@ -12,6 +12,29 @@
 
 产物 96 KB，由 `build2.sh` 用 `node-gyp` + clang 21 编译。本仓已包含该产物（`narb-src/packages/native/build/Release/require_builtin.node`），构建树整体被 `.gitignore` 排除，仅此文件被强制纳入版本控制。
 
+### 预编译产物的版本校验
+
+`.node` 是**编译产物**，ABI 与源码版本绑定。dsh 用 `^0.1.9` 这类 semver 松约束声明依赖，但那是对**源码**的兼容承诺，对二进制不成立。
+
+所以产物旁边有一个 `PREBUILT_FOR` 文件，写明它是给哪个版本编的（由 `build2.sh` 生成）：
+
+```
+node-addon-require-builtin@0.1.9
+```
+
+`install-addon.sh` 在复制前做**精确比对**（取数字部分，不判断区间）：
+
+| dsh 需要 | 产物编译自 | 结果 |
+|---|---|---|
+| 0.1.9 | 0.1.9 | 装 |
+| 0.1.10 | 0.1.9 | **拒绝** |
+| 读不到 | 任意 | **拒绝** |
+| 任意 | 缺 `PREBUILT_FOR` | **拒绝** |
+
+默认拒绝而不是警告：版本不符时 Node 仍能加载这个 `.node`（`package.json` 是脚本自己写的，入口对得上），但**行为可能已经不对**——这种静默错误比加载失败难查得多。
+
+确知自己在做什么时，`ALLOW_ADDON_MISMATCH=1 bash install-addon.sh` 可跳过。
+
 ## 2. `flock`
 
 dsh 用 `flock` 做工作区级的跨进程互斥。该 API 在 Android 上被平台门控拒绝，`shim-flock.sh` 将其替换为 no-op。

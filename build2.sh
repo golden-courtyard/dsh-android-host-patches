@@ -24,4 +24,17 @@ echo "=== 4. 产物 ==="
 find "$HOME/narb-src" -name '*.node' 2>/dev/null
 ls -la build/Release/ 2>&1 | head -8
 
+echo "=== 5. 记下这份产物是给哪个源码版本编的 ==="
+# ⛔ install-addon.sh 靠这个文件判断能不能装 —— 没有它就拒绝安装。
+#    .node 是编译产物，ABI 与源码版本绑定；dsh 的 `^0.1.9` 是 semver 松约束，
+#    对二进制不成立，所以必须留下**确切**版本。
+VER=$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' package.json 2>/dev/null | head -1)
+if [ -n "$VER" ]; then
+    printf 'node-addon-require-builtin@%s\n' "$VER" > build/Release/PREBUILT_FOR
+    echo "  已写 build/Release/PREBUILT_FOR → $(cat build/Release/PREBUILT_FOR)"
+else
+    echo "  ⛔ 读不到 package.json 的 version，PREBUILT_FOR 未生成"
+    echo "     → install-addon.sh 会因此拒绝安装（这是有意的）"
+fi
+
 echo "=== 完成 ==="

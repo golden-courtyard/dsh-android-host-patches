@@ -20,16 +20,12 @@ dsh --version
 echo "  需要的原生模块版本: $(node -e "console.log(require(process.env.PREFIX+'/lib/node_modules/@deepseek-ai/dsh/package.json').dependencies['node-addon-require-builtin'])" 2>&1)"
 
 echo "=== 3. 重放原生模块（require_builtin.node）==="
-mkdir -p "$D/android-arm64"
-if [ -f "$HOME/narb-src/packages/native/build/Release/require_builtin.node" ]; then
-    cp "$HOME/narb-src/packages/native/build/Release/require_builtin.node" "$D/android-arm64/"
-    cat > "$D/android-arm64/package.json" <<'EOF'
-{ "name": "node-addon-require-builtin-android-arm64", "version": "0.1.9",
-  "private": true, "main": "require_builtin.node" }
-EOF
-    echo "  已放置 $(ls -l "$D/android-arm64/require_builtin.node" | awk '{print $5}') 字节"
+# ⛔ 别在这里再写一遍复制逻辑：与 install-addon.sh 重复，两处会漂。
+#    版本校验也在那边（.node 是编译产物，不服从 semver 兼容承诺）。
+if [ -f "$HOME/install-addon.sh" ]; then
+    bash "$HOME/install-addon.sh" 2>&1 | tail -14
 else
-    echo "  失败：找不到编好的 .node，需要先跑 build2.sh 重编"
+    echo "  失败：没有 install-addon.sh"
 fi
 
 echo "=== 4. 重放 flock 替换 ==="
