@@ -70,6 +70,31 @@ git -c http.proxy=http://127.0.0.1:17897 pull
 PC 的代理如果只监听 `127.0.0.1`，局域网是连不上的，`adb reverse` 是唯一办法。
 
 
+## 换 npm 源（中国大陆建议先做）
+
+手机上直连 `registry.npmjs.org` 通常只有几十 KB/s，`npm i -g @deepseek-ai/dsh` 会卡很久甚至超时。换国内镜像：
+
+```bash
+npm config set registry https://registry.npmmirror.com
+npm config get registry          # 应回显镜像地址
+```
+
+或者写进 `~/.npmrc`，一行就够（仓库里的 `examples/.npmrc` 就是这个内容）：
+
+```
+registry=https://registry.npmmirror.com
+```
+
+**换源之后要留意一件事：镜像有同步延迟。**
+
+dsh 发版很密（几天一个 alpha），而镜像同步到新版本需要时间。如果装刚发布的版本报 `No matching version`，不是版本号写错，是镜像还没跟上——临时用官方源装：
+
+```bash
+npm i -g @deepseek-ai/dsh@0.2.2-alpha.2 --registry=https://registry.npmjs.org
+```
+
+装完可以留在镜像源上（日常装包更快），只在追新版本时用 `--registry` 临时覆盖。
+
 ## 步骤 2：装 dsh，确认它起不来
 
 ```bash
@@ -184,7 +209,11 @@ bash ~/verify-dsh.sh
 
 尺寸变了、格式变了、字节数变了，三条同时成立才算解码真的发生。尺寸不变的产物说明走的是直通实现，回到步骤 6。
 
-## 升级 dsh 之后
+## 升级 dsh 之后：必须重放补丁
+
+`npm install -g` 会**整体替换安装目录**。落在安装目录里的补丁——原生模块、flock、sharp、附件持久化——随之全部丢失；只有 `~/shims` 下的硬链接垫片不受影响，因为它本来就不在安装目录里。
+
+所以升级不是"装完就完"，多一步：
 
 ```bash
 bash ~/upgrade.sh 0.2.2-alpha.2
