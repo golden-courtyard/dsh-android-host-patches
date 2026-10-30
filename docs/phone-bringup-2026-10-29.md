@@ -167,6 +167,7 @@ cd ~ && dsh --profile main --no-open >> ~/dsh-run.log 2>&1 &
 
 机制问题已开 issue 跟踪：**agent-hub #3** —
 https://github.com/liumiaoqi/agent-hub/issues/3
+（2026-10-30 关闭为 NOT_PLANNED：机制层面成立、现象不可复现、已无影响）
 
 **处置**：既然"替换 `node_modules/sharp`"是被实证有效的机制，就不再依赖钩子：
 
@@ -228,8 +229,12 @@ https://github.com/liumiaoqi/agent-hub/issues/3
    不适合大模型或大图搜索
 5. `upgrade.sh` 目前只重放 flock 与原生模块两关，sharp 这关需要追加一步
    （`install-sharp-shim.sh`）
-6. NODE_OPTIONS 钩子为何未作用于解码路径 —— 机制未定，见 agent-hub #3，
-   待从源码查 `packages/*/lazy-require` 与 `packages/attachment*`
+6. ~~NODE_OPTIONS 钩子为何未作用于解码路径~~ —— agent-hub #3 已关闭（NOT_PLANNED）。
+   结论：`NODE_OPTIONS --require` + `Module._load` patch 在 PC 与手机上都成立，
+   `android-fs-shim` 就是这条且一直有效；现象不可复现，改用替换 `node_modules/sharp`
+   后解码一直正常，已无影响。当时那个进程已退出，最可能的解释是 `.bashrc` 指向的
+   文件内容与事后读到的那一版不是同一份。
+   **教训：再遇到"钩子像没生效"，先核对 `--require` 那个文件的 sha256，再谈加载机制。**
 
 ## 7. 给 PC 侧 dsh 的两条建议
 

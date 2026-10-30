@@ -2,14 +2,14 @@
 *.gguf
 
 # 外部状态与缓存（含凭据、会话日志）
-.dsh/*
-!.dsh/skills/
+.dsh/
 .udocker/
 .termux/
 .cache/
 .npm/
 .local/
 .ssh/
+skills-backup-*/
 sync/
 
 # syncthing 元数据
