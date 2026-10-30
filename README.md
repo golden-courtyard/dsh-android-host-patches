@@ -79,7 +79,19 @@ pkill -f "dsh --profile" && cd ~ && nohup dsh --profile main --no-open >> ~/dsh-
 |---|---|---|
 | [docs/tutorial.md](docs/tutorial.md) | 教程 | 从裸 Termux 走到能解码图片，按顺序 |
 | [docs/reference.md](docs/reference.md) | 参考 | 每个补丁的机制、失败形态、判据、代价 |
-| [sync/phone-share/](sync/phone-share/) | 移植记录 | 首次移植时的现场记录，含当时的误判，保留不改 |
+| [docs/phone-bringup-2026-10-29.md](docs/phone-bringup-2026-10-29.md) | 移植记录 | 首次移植时的现场记录，含当时的误判，保留不改 |
+
+## 仓库里的其它文件
+
+| 文件 | 说明 |
+|---|---|
+| `upgrade.sh` | 升级后按顺序重放全部补丁；参数是目标版本号 |
+| `verify-dsh.sh` | 端到端检查：配置能组合、没有未激活条目。不依赖任何具体预设 |
+| `probe.sh` | 排查用：列出 dsh 支持哪些 `--from-default-profile` 模板、现有 profile 挂了哪些 bundle |
+| `examples/.bashrc` · `examples/.npmrc` · `examples/dsh-wrapper` | 本机实际在用的配置样例。**里面的绝对路径要改成你自己的**，`dsh-wrapper` 是给 `NODE_OPTIONS` 兜底的包装器 |
+| `narb-src/…/require_builtin.node` | 已编好的 android-arm64 原生模块（约 96 KB），省去现场编译。**其它平台不能直接用**，要从源码编，见教程步骤 2 |
+
+`build2.sh` 负责编译那个 `.node`，`install-addon.sh` 负责落位。两个都是幂等的。
 
 ## 许可
 

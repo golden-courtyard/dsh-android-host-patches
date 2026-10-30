@@ -8,8 +8,18 @@
  * 已留档在 shims/retired/sharp-shim.passthrough.cjs。
  *
  * 现在后端是 shims/sharp/index.cjs（vips 命令行做像素工作），落在
- * dsh 的 node_modules/sharp。这个钩子仍然保留，因为 NODE_OPTIONS 是
- * 本机唯一稳定的注入点；它只做转发，不再自己实现任何图像逻辑。
+ * dsh 的 node_modules/sharp。
+ *
+ * 本文件保留，但**当前不被引用** —— 手机端 .bashrc 的 NODE_OPTIONS 已收敛为
+ * 只带 android-fs-shim。
+ *
+ * 为什么不靠它：2026-10-29 在 dsh 进程内实测，require('sharp') 没有经过这个
+ * 钩子（记录见 agent-hub issue #3）。钩子机制本身成立——同样的 NODE_OPTIONS
+ * 在独立进程里、CJS 与 ESM 两种入口都能拦截——但在这台机器的 dsh 进程里没观察
+ * 到生效，根因未复现。而"直接替换 node_modules/sharp"已多次实证有效，故选后者。
+ *
+ * 若将来要再试钩子：先确认 ① 进程启动时 NODE_OPTIONS 确实指向本文件；
+ * ② 该文件当时的 sha256 与预期一致（并行改动容易串版本）。
  *
  * 生效条件：dsh 进程重启（NODE_OPTIONS 在一次进程生命周期内不变）。
  */

@@ -1,6 +1,6 @@
 # 参考：每个补丁的机制、失败形态与判据
 
-按 dsh 安装目录的改动位置分组。操作顺序见 [教程](tutorial.md)；首次移植的现场记录见 [`sync/phone-share/`](../sync/phone-share/)。
+按 dsh 安装目录的改动位置分组。操作顺序见 [教程](tutorial.md)；首次移植的现场记录见 [移植记录](phone-bringup-2026-10-29.md)（含当时的误判与未定项，保留不改）。
 
 ## 1. 原生模块 `node-addon-require-builtin`
 
