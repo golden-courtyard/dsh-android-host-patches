@@ -28,6 +28,48 @@ sv-enable sshd
 
 装好后从另一台机器 ssh 进来一次并保留会话。后续步骤会反复重启 dsh 进程，有一条稳定的旁路通道能省下大量时间。
 
+## 打通 PC → 手机的通道（adb + ssh）
+
+上一步装了 `openssh` 并启用了 sshd，现在把通道建起来。后续每一步都要在手机上改文件、重启进程、看日志，用手机键盘敲很痛苦；而 `adb shell` 是非交互的，`TERM` 缺失还会让一些工具输出异常。USB 映射 + ssh 之后就和操作一台普通 Linux 机器一样。
+
+```bash
+# PC 侧：把手机的 8022 映射到本机 22022
+adb devices                              # 先确认设备串号
+adb -s <串号> forward tcp:22022 tcp:8022
+
+# 连上去
+ssh -p 22022 -i ~/.ssh/<你的密钥> u0_a416@127.0.0.1
+```
+
+这条通道走 USB，**不依赖手机有没有外网**。手机断网、开飞行模式、代理挂了，通道照常。
+
+### 四个实测坑
+
+**① Termux 的 sshd 不按用户名授权。** 实测 `root@` 与一个根本不存在的用户名都落到同一个 uid，认证只看公钥。所以用户名写错不会报错，也**不是**认证失败的排查方向 —— 连不上时只查私钥对不对、公钥有没有写进 `~/.ssh/authorized_keys`。
+
+**② `adb forward --list` 里有规则，不代表它还能用。** 规则会"列得出来但已经死了"，ssh 报 `kex_exchange_identification: Connection closed`。重发一次同样的 `adb forward` 命令即恢复 —— 这条命令是幂等的，别先怀疑密钥。
+
+**③ 私钥带口令在非交互环境用不了。** ssh 会等口令输入而卡住，表现为"命令超时"。给手机专用的密钥建议 `ssh-keygen -p -f <密钥>` 去掉口令，或者走 ssh-agent。
+
+**④ 首次连接要接受主机指纹。** 脚本里会卡在 `Are you sure you want to continue connecting`。加 `-o StrictHostKeyChecking=accept-new`，或者先手工连一次。
+
+### 附：把 PC 的代理借给手机
+
+手机没有外网、或手机上的代理没覆盖 Termux 时，可以用 `adb reverse` 把 PC 的代理端口反向映射进去：
+
+```bash
+# PC 侧：手机 127.0.0.1:17897 → PC 127.0.0.1:7897
+adb reverse tcp:17897 tcp:7897
+
+# 手机上：临时走这条通道
+git -c http.proxy=http://127.0.0.1:17897 pull
+```
+
+端口别用 7897 —— 手机上自己的代理（Clash 之类）通常已经占着它，`adb reverse` 会报 `cannot bind listener: Address already in use`。
+
+PC 的代理如果只监听 `127.0.0.1`，局域网是连不上的，`adb reverse` 是唯一办法。
+
+
 ## 步骤 2：装 dsh，确认它起不来
 
 ```bash
