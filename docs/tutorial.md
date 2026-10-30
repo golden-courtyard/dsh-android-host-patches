@@ -7,7 +7,7 @@
 ## 前提
 
 - 一台无 root、aarch64 的 Android 设备，Termux 已装好
-- 能访问 npm 与 GitHub（必要时给 Termux 配代理）
+- 能访问 npm 与 GitHub（速度慢的话先做下一节的换源）
 - 磁盘至少留 5 GB
 
 先确认环境：
@@ -17,6 +17,72 @@ uname -m && node -v && vips --version
 ```
 
 `uname -m` 应为 `aarch64`。`node -v` 应为 v24 或更高。`vips --version` 应为 `8.18.x`——版本低于 8.18 时后文的图片后端不可用。
+
+## 换源（Termux 包源 + npm 源）
+
+手机上直连官方源普遍很慢。**两处要换，作用不同，都要做**：
+
+| 换哪 | 影响什么 | 什么时候用到 |
+|---|---|---|
+| Termux 包源 | `pkg install` | 步骤 1 装 node / clang / libvips |
+| npm 源 | `npm i -g` | 步骤 2 装 dsh |
+
+### Termux 包源
+
+官方给了交互式工具：
+
+```bash
+termux-change-repo          # TUI，方向键选镜像站
+```
+
+TUI 不适合脚本和 agent。直接改文件更可控：
+
+```bash
+# 先备份
+cp $PREFIX/etc/apt/sources.list $PREFIX/etc/apt/sources.list.bak
+
+# 换成清华源（一行）
+cat > $PREFIX/etc/apt/sources.list <<'EOF'
+deb https://mirrors.tuna.tsinghua.edu.cn/termux/apt/termux-main stable main
+EOF
+
+pkg update
+```
+
+验证：
+
+```bash
+grep -v '^#' $PREFIX/etc/apt/sources.list
+```
+
+应只剩 `deb ...` 那一行。
+
+**三个容易写错的地方**：
+
+- **路径必须含 `/termux/apt/termux-main`**。少写一段（比如只写到 `/termux/`）会让 `pkg update` 报 404，而后面的 `pkg install` 全部失败。
+- **想换回官方源**，写 `deb https://packages-cf.termux.dev/apt/termux-main stable main`。
+- `pkg update` 报 `Release file ... is not valid yet` 通常不是源坏了，是**手机时间不对**——先校准时间。
+
+### npm 源
+
+```bash
+npm config set registry https://registry.npmmirror.com
+npm config get registry          # 应回显镜像地址
+```
+
+或者写进 `~/.npmrc`，一行就够（仓库里的 `examples/.npmrc` 就是这个内容）：
+
+```
+registry=https://registry.npmmirror.com
+```
+
+**留意镜像同步延迟。** dsh 发版很密（几天一个 alpha），而镜像同步到新版本需要时间。如果装刚发布的版本报 `No matching version`，不是版本号写错，是镜像还没跟上——临时用官方源装：
+
+```bash
+npm i -g @deepseek-ai/dsh@0.2.2-alpha.2 --registry=https://registry.npmjs.org
+```
+
+装完可以留在镜像源上（日常装包更快），只在追新版本时用 `--registry` 临时覆盖。
 
 ## 步骤 1：装底座
 
@@ -69,31 +135,6 @@ git -c http.proxy=http://127.0.0.1:17897 pull
 
 PC 的代理如果只监听 `127.0.0.1`，局域网是连不上的，`adb reverse` 是唯一办法。
 
-
-## 换 npm 源（中国大陆建议先做）
-
-手机上直连 `registry.npmjs.org` 通常只有几十 KB/s，`npm i -g @deepseek-ai/dsh` 会卡很久甚至超时。换国内镜像：
-
-```bash
-npm config set registry https://registry.npmmirror.com
-npm config get registry          # 应回显镜像地址
-```
-
-或者写进 `~/.npmrc`，一行就够（仓库里的 `examples/.npmrc` 就是这个内容）：
-
-```
-registry=https://registry.npmmirror.com
-```
-
-**换源之后要留意一件事：镜像有同步延迟。**
-
-dsh 发版很密（几天一个 alpha），而镜像同步到新版本需要时间。如果装刚发布的版本报 `No matching version`，不是版本号写错，是镜像还没跟上——临时用官方源装：
-
-```bash
-npm i -g @deepseek-ai/dsh@0.2.2-alpha.2 --registry=https://registry.npmjs.org
-```
-
-装完可以留在镜像源上（日常装包更快），只在追新版本时用 `--registry` 临时覆盖。
 
 ## 步骤 2：装 dsh，确认它起不来
 
