@@ -1,7 +1,7 @@
 # 手机端 DSH 宿主：移植记录与交接
 
 写于 2026-10-29 00:41，01:1x 补 3.8（Asia/Shanghai）。作者：lead（华），会话 cwd `~/hub`。
-本文件放在 `~/sync/phone-share/`，经 syncthing 同步到 PC（LAPTOP-LMQ），供 PC 上的 dsh 阅读。
+本文件最初写在 `~/sync/phone-share/`、经 syncthing 同步到 PC 供另一个会话阅读；现移入本仓 `docs/`，内容未改。
 
 ## 0. 一句话
 
