@@ -52,9 +52,9 @@
 ## 用法
 
 ```bash
-# 首次安装：按 docs/tutorial.md 走
-# 升级 dsh 之后：
-bash ~/upgrade.sh 0.2.2-alpha.2
+# 首次安装：按 docs/tutorial.md 走（步骤 3~7 手动做，每步有验证判据）
+# 以后升级：
+bash ~/upgrade.sh <目标版本>
 ```
 
 升级后必须重启进程。`NODE_OPTIONS` 与模块缓存都在启动时固定，不重启则补丁不生效：
@@ -62,6 +62,8 @@ bash ~/upgrade.sh 0.2.2-alpha.2
 ```bash
 pkill -f "dsh --profile" && cd ~ && nohup dsh --profile main --no-open >> ~/dsh-run.log 2>&1 &
 ```
+
+⚠️ **`upgrade.sh` 尚未实测。** 本仓只在 `0.2.2-alpha.2` 上做过一次移植，没有任何一次真实升级记录（判据：`~/upgrade.log` 不存在，而脚本第一行就 `tee` 到该文件）。它把步骤 3~7 的动作串起来重放，**设计给重复执行用，不适合首次移植**——首次走教程手动做，出错才能定位。详见[教程该节](docs/tutorial.md#以后升级怎么办未实测)。
 
 图片链路的端到端判据是产物尺寸变化：2446×3462 PNG 输入，落盘为 1721×2436 JPEG。尺寸不变即解码未真正发生，见 [参考 §4](docs/reference.md)。
 
