@@ -81,6 +81,20 @@ pkill -f "dsh --profile" && cd ~ && nohup dsh --profile main --no-open >> ~/dsh-
 
 补丁落在安装目录之外（`~/shims`、`~/bin`）或可重放脚本里，不 fork dsh。代价是每次升级要跑一次 `upgrade.sh`，收益是不与上游合并冲突。
 
+## 版本与 tag
+
+**本仓没有自己的版本号**，它跟着 dsh 走。tag 名就是相配的 dsh 版本：
+
+```
+v0.2.2-alpha.2-bringup
+   └─────┬─────┘ └──┬──┘
+    dsh 版本号      标记含义
+```
+
+`-bringup` 指的是"这个 dsh 版本在这台机器上跑起来了"那一刻，不是本仓的发布版本。
+
+**升级到别的 dsh 版本时新打一个 tag，不要移动旧 tag**（比如 `v0.2.3-bringup`）。移动 tag 会让别人手里的旧 tag 失效，而且可能指向已不在历史里的提交 —— 本次就踩过：历史重写后旧 tag 漂成了孤儿，`git describe` 直接报 `No tags can describe`。
+
 ## 文档
 
 | 文档 | 类型 | 内容 |
