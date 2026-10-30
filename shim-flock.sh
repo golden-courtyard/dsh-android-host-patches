@@ -35,7 +35,7 @@ console.log("  tryLockExclusive(0) -> resolved，没有抛");
 
 echo ""
 echo "=== 用包的 exports 路径测（模拟真实调用）==="
-cd "$PREFIX/lib/node_modules/@deepseek-ai/dsh"
+cd "$PREFIX/lib/node_modules/@deepseek-ai/dsh" || exit 1
 node --input-type=module -e '
 const m = await import("@deepseek-ai/node-addon-system/flock");
 await m.tryLockExclusive(0);
