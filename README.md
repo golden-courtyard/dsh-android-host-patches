@@ -103,6 +103,8 @@ v0.2.2-alpha.2-bringup
 | [docs/reference.md](docs/reference.md) | 参考 | 每个补丁的机制、失败形态、判据、代价 |
 | [docs/phone-bringup-2026-10-29.md](docs/phone-bringup-2026-10-29.md) | 移植记录 | 首次移植时的现场记录，含当时的误判，保留不改 |
 
+**本机事实放 `local/`**（设备串号、真实路径、调试笔记），那里在 `.gitignore` 里，不会进仓。仓里只放别人也能照用的东西。
+
 ## 仓库里的其它文件
 
 | 文件 | 说明 |
